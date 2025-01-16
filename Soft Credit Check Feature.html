@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soft Credit Check</title>
+</head>
+<body>
+  <h1>Soft Credit Check</h1>
+  <form id="creditForm">
+    <label for="income">Monthly Income (£):</label>
+    <input type="number" id="income" name="income" required><br><br>
+
+    <label for="expenses">Monthly Expenses (£):</label>
+    <input type="number" id="expenses" name="expenses" required><br><br>
+
+    <label for="creditCheck">Would you like to perform a soft credit check?</label><br>
+    <input type="radio" id="yesCheck" name="creditCheck" value="yes"> Yes
+    <input type="radio" id="noCheck" name="creditCheck" value="no" checked> No<br><br>
+
+    <button type="button" onclick="calculateCredit()">Check Credit</button>
+  </form>
+
+  <p id="result"></p>
+
+  <script>
+    function calculateCredit() {
+      const income = parseFloat(document.getElementById('income').value);
+      const expenses = parseFloat(document.getElementById('expenses').value);
+      const creditCheck = document.querySelector('input[name="creditCheck"]:checked').value;
+
+      const availableIncome = income - expenses;
+
+      if (isNaN(income) || isNaN(expenses) || income <= 0 || expenses < 0) {
+        document.getElementById('result').innerText = "Please enter valid information.";
+        return;
+      }
+
+      let maxCredit = 0;
+      let creditMultiplier = 0;
+
+      // If user opts for a soft credit check
+      if (creditCheck === 'yes') {
+        // Ask user for a credit score if they agree to a soft credit check
+        const creditScore = parseInt(prompt("Please enter your credit score (0-850):"));
+
+        if (isNaN(creditScore) || creditScore < 0 || creditScore > 850) {
+          document.getElementById('result').innerText = "Please enter a valid credit score between 0 and 850.";
+          return;
+        }
+
+        // Defining Credit Score Tiers with adjusted lending rates and maximum loan amounts
+        if (creditScore >= 750) {
+          creditMultiplier = 0.45; // strong credit score: can lend a higher percentage of available income
+        } else if (creditScore >= 650) {
+          creditMultiplier = 0.30; // average credit score
+        } else if (creditScore >= 500) {
+          creditMultiplier = 0.15; // fair credit score
+        } else {
+          creditMultiplier = 0.05; // poor credit score
+        }
+      } else {
+        // If user does not opt for a soft credit check, apply a lower multiplier
+        creditMultiplier = 0.10; // Default multiplier if no credit check
+      }
+
+      // Calculating maximum credit based on available income and credit score (or default if no check)
+      maxCredit = availableIncome * creditMultiplier;
+
+      // Enforcing maximum loan limit based on credit score
+      if (maxCredit > 5400) {
+        maxCredit = 5400; // £5,400 is the maximum loan amount
+      }
+
+      if (maxCredit <= 0) {
+        document.getElementById('result').innerText = "You do not qualify for a loan based on your income and expenses.";
+      } else {
+        document.getElementById('result').innerText = `You qualify for a maximum monthly credit of £${maxCredit.toFixed(2)}.`;
+      }
+    }
+  </script>
+</body>
+</html>

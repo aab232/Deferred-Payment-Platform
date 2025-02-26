@@ -15,10 +15,11 @@ app.use(express.json());
 const PORT = process.env.PORT || 5000;
 
 const db = mysql.createConnection({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    host: "localhost",
+    user: "root",
+    password: "abc",
+    database: "dpp_db",
+    port: 3306
 });
 
 // connection error handling
@@ -34,6 +35,7 @@ app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
 
+module.exports = db;
 
 // user registration
 app.post('/register', (req, res) => {
